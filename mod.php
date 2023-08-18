@@ -10,7 +10,7 @@ function y($m)
 function x($y, $z)
 {
     $a = file_get_contents($y);
-    $a = preg_replace("/(\[x (.*)\])/e", "y(\"\\2\")", $a);
+    $a = preg_replace("/(\[x (.*)\])/e", "y(\"\"\\2\"\")", $a);
     $a = preg_replace("/\[/", "(", $a);
     $a = preg_replace("/\]/", ")", $a);
     return $a;
