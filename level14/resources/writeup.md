@@ -4,8 +4,6 @@ There is nothing. No file. No special permission. No service running.
 
 We first thought there might be some hidden message in the previous tokens but after further scrutiny they looked quite random.
 
-TODO ULYSSE VULNERABILITY SCANNER + DIRTYCOW PARAGRAPHS.
-
 The last thing to do was to break `getflag` itself. The code is much bigger than in the previous exercise but the process is similar.
 
 This block of code is repeated 15 times without much modification. This looks like a switch case which executes `puts(ft_des(some_random_string))`.
