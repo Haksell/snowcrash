@@ -428,7 +428,7 @@ There are several methods, like changing the value of the variable `uid`. But th
 
 There is nothing. No file. No special permission. No service running.
 
-We first thought there might be some hidden message in the prevous tokens but after further scrutiny they looked quite random.
+We first thought there might be some hidden message in the previous tokens but after further scrutiny they looked quite random.
 
 TODO ULYSSE VULNERABILITY SCANNER + DIRTYCOW PARAGRAPHS.
 
