@@ -1,1 +1,0 @@
-data = string.sub(data, 1, 40)
