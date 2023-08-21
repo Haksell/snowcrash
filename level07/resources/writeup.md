@@ -11,7 +11,7 @@ Dump of assembler code for function main:
    0x08048515 <+1>:     mov    %esp,%ebp
    0x08048517 <+3>:     and    $0xfffffff0,%esp
    0x0804851a <+6>:     sub    $0x20,%esp
-=> 0x0804851d <+9>:     call   0x80483f0 <getegid@plt>
+   0x0804851d <+9>:     call   0x80483f0 <getegid@plt>
    0x08048522 <+14>:    mov    %eax,0x18(%esp)
    0x08048526 <+18>:    call   0x80483e0 <geteuid@plt>
    0x0804852b <+23>:    mov    %eax,0x1c(%esp)

