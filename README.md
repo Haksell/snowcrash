@@ -4,7 +4,7 @@ The goal was to explore the Virtual Machine.
 
 We found a few interesting files related to later levels and after a while, we executed `ls -lah` in `/usr/sbin` and found a suspicious non-executable file called john.
 
-![Alt text](image.png)
+![Alt text](level00/resources/image.png)
 
 `/usr/sbin/john` contains `cdiiddwpgswtgt`. This was not the `flag00` password but we quickly guessed that it was a Caesar Cipher. [dcode.fr](https://www.dcode.fr/caesar-cipher) found the password `nottoohardhere`.
 
@@ -14,7 +14,7 @@ John as filename is quite suspicious, and it turned out to actually be an hint f
 
 We already executed `cat /etc/passwd` in the previous exercise and found a hash for flag01.
 
-![Alt text](image.png)
+![Alt text](level01/resources/image.png)
 
 Once again, it is not the password for flag01, but this doesn't seem to be a Caesar Cipher either. Dcode wouldn't give us any useful information.
 We found a program called John the Ripper thanks to the filename of the previous exercice.
@@ -41,17 +41,17 @@ $ chmod 400 level02.pcap
 
 We will use Wireshark to analyse the packets. Packet 43 has the string `Password:`.
 
-![Alt text](image.png)
+![Alt text](level02/resources/image.png)
 
 All the following packets alternate lengths between 66 and 67. The TCP packet header is 66 characters long, so it looks like the password is sent character by character with an acknowledgement everytime.
 
 Right click on packet 43 -> Follow -> TCP Stream. `Password: ft_wandr...NDRel.L0L`. 
 
-![Alt text](image-1.png)
+![Alt text](level02/resources/image-1.png)
 
 We can look at the dots and see that their value is `7f` which is the `DEL` character. 
 
-![Alt text](image-2.png)
+![Alt text](level02/resources/image-2.png)
 
 The password is then `ft_waNDReL0L`.
 
@@ -66,7 +66,7 @@ the user initiating the execution.
 Noted here as the 's' instead of the usual 'x', it means that the setuid 
 (for the owner's permission) or setgid (for the group's permission) bit is set and the execute permission is also set.
 
-![Alt text](image.png)
+![Alt text](level03/resources/image.png)
 
 To understand what the executable does, we are going to use gdb.
 
