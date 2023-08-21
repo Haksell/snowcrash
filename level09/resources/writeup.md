@@ -26,4 +26,4 @@ We wrote a Python one-liner to reverse this process.
 
 `python -c "print(''.join(chr(ord(c)-i) for i,c in enumerate(open('token', 'rb').read().strip())))"`
 
-Which yields this token-looking token: `f3iji1ju5yuevaus41q1afiuq`. Once again we have to think to log into `flag09` and launch `getflag`.
+Which yields this token-looking token: `f3iji1ju5yuevaus41q1afiuq`.
