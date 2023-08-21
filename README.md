@@ -2,16 +2,26 @@
 
 The goal was to explore the Virtual Machine.
 
-After a while, we executed `ls -lah` in `/usr/sbin` and found a suspicious non-executable file called john.
+We found a few interesting files related to later levels and after a while, we executed `ls -lah` in `/usr/sbin` and found a suspicious non-executable file called john.
+
+![Alt text](image.png)
 
 `/usr/sbin/john` contains `cdiiddwpgswtgt`. This was not the `flag00` password but we quickly guessed that it was a Caesar Cipher. [dcode.fr](https://www.dcode.fr/caesar-cipher) found the password `nottoohardhere`.
 
+John as filename is quite suspicious, and it turned out to actually be an hint for the next exercice.   
 
 ## level01
 
 We already executed `cat /etc/passwd` in the previous exercise and found a hash for flag01.
 
-Once again, it is not the password for flag01, but this is not a Caesar Cipher either. We will use `John the Ripper` to decrypt the password.
+![Alt text](image.png)
+
+Once again, it is not the password for flag01, but this doesn't seem to be a Caesar Cipher either. Dcode wouldn't give us any useful information.
+We found a program called John the Ripper thanks to the filename of the previous exercice.
+
+
+John the Ripper, often simply referred to as "John", is an open-source password cracking software tool. It reads password files and tries to crack them.
+We will use `John the Ripper` to decrypt the password. 
 
 Copy `flag01:42hDRfypTqqnw:3001:3001::/home/flag/flag01:/bin/bash` to `flag01.passwd` on the host machine.
 
@@ -29,28 +39,70 @@ $ scp -P 8022 level02@10.24.4.2:/home/user/level02/level02.pcap .
 $ chmod 400 level02.pcap
 ```
 
-We will use Wireshark to analyse the packets. Packet 43 has the string `Password:`. All the following packets alternate lengths between 66 and 67. The TCP packet header is 66 characters long, so it looks like the password is sent character by character with an acknowledgement everytime.
+We will use Wireshark to analyse the packets. Packet 43 has the string `Password:`.
 
-Right click on packet 43 -> Follow -> TCP Stream. `Password: ft_wandr...NDRel.L0L`. We can look at the dots and see that their value is `7f` which is the `DEL` character. The password is then `ft_waNDReL0L`.
+![Alt text](image.png)
+
+All the following packets alternate lengths between 66 and 67. The TCP packet header is 66 characters long, so it looks like the password is sent character by character with an acknowledgement everytime.
+
+Right click on packet 43 -> Follow -> TCP Stream. `Password: ft_wandr...NDRel.L0L`. 
+
+![Alt text](image-1.png)
+
+We can look at the dots and see that their value is `7f` which is the `DEL` character. 
+
+![Alt text](image-2.png)
+
+The password is then `ft_waNDReL0L`.
 
 ## level03
 
-There is an executable in the home folder. `./level03` -> `Exploit me`. We will try to reverse engineer it.
+There is an executable in the home folder. `./level03`. Executing it outputs : `Exploit me`. We will try to reverse engineer it.
+
+A recurring and important theme throughout the exercices is that files given often have the setuid bit set.
+This means that these files, when executed, will run with the permissions of the file's owner rather than the permissions of 
+the user initiating the execution. 
+
+Noted here as the 's' instead of the usual 'x', it means that the setuid 
+(for the owner's permission) or setgid (for the group's permission) bit is set and the execute permission is also set.
+
+![Alt text](image.png)
+
+To understand what the executable does, we are going to use gdb.
 
 ```
 $ gdb ./level03
 (gdb) break main
+(gdb) run
 (gdb) disassemble
+```
+
+From the disassembled code, an important snippet appears:
+```
 ...
    0x080484f7 <+83>:    movl   $0x80485e0,(%esp)
    0x080484fe <+90>:    call   0x80483b0 <system@plt>
    0x08048503 <+95>:    leave  
    0x08048504 <+96>:    ret
+```
+
+Investigating further into what the address 0x80485e0 holds:
+```
 (gdb) x/s 0x80485e0
 0x80485e0:       "/usr/bin/env echo Exploit me"
 ```
+It returns: "/usr/bin/env echo Exploit me".
 
-We can execute arbitrary code by making sure `env echo` returns our executable.
+This indicates that the executable runs the command echo Exploit me using the env command.
+
+Based on the above observation, there's a vulnerability. 
+We can exploit the behavior by making the env command point to a malicious echo executable, 
+allowing us to execute arbitrary code.
+
+To exploit this:
+
+Create a fake echo script in the /tmp directory and modify the PATH environment variable to
+prioritize our malicious echo which will actually execute getflag with the rights from flag03, and then run level03:
 
 ```shell
 echo '#!/bin/sh' > /tmp/echo
@@ -61,9 +113,12 @@ PATH="/tmp:$PATH" ./level03
 
 ## level04
 
-There is a perl CGI running on port 4747. It displays the query parameter `x`. Since Perl calls shell code with our string, we can inject a `` `getflag` `` in the command. We make sure getflag is not executed on our side by adding single quotes around the `curl` argument.
+There is a Perl CGI running on port 4747. It displays the query parameter `x`. Since Perl calls shell code with our string, we can inject a `` `getflag` `` in the command. We make sure getflag is not executed on our side by adding single quotes around the `curl` argument.
 
 ``curl 'localhost:4747?x=`getflag`'``
+
+This will send a request to the Perl CGI application, instructing it to execute the getflag command on its side.
+
 
 ## level05
 
@@ -77,10 +132,14 @@ for i in /opt/openarenaserver/* ; do
 done
 ```
 This script finds all the files found in `/opt/openarenaserver/*`, executes them, and removes them.
+
+We will craft a script to exploit this vulnerability.
+Our aim is for the cron job to run the getflag command and then broadcast the output to all users' terminals, meaning our terminal, using the wall command.
+
 ```shell
-echo '#!/bin/sh' > /opt/openarenaserver/lol.sh
-echo 'getflag | wall' >> /opt/openarenaserver/lol.sh
-chmod +x /opt/openarenaserver/lol.sh
+echo '#!/bin/sh' > /opt/openarenaserver/exploit.sh
+echo 'getflag | wall' >> /opt/openarenaserver/exploit.sh
+chmod +x /opt/openarenaserver/exploit.sh
 ```
 
 ## level06
@@ -236,14 +295,13 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-The program displays the first 1024 characters of the file given as argument, but refuses to read the `token` file. However, the only protection is a `strstr` with `"token"`, so we can easily bypass it with a symbolic link.
+The program displays the first 1024 characters of the file given as argument, but refuses to read the `token` file. However, the only protection is a `strstr` with `"token"`, so we can easily bypass it with a symbolic link, giving us the password for flag08.
 
 ```shell
 $ ln -s /home/user/level08/token /tmp/link
 $ ./level08 /tmp/link # quif5eloekouj29ke0vouxean
 ```
 
-We lost some time trying to understand why we couldn't connect to `level09` with the token, even trying John the Ripper on it, until we realized we still needed to log to `flag08` and execute `getflag` here.
 
 ## level09
 
@@ -429,8 +487,6 @@ There are several methods, like changing the value of the variable `uid`. But th
 There is nothing. No file. No special permission. No service running.
 
 We first thought there might be some hidden message in the previous tokens but after further scrutiny they looked quite random.
-
-TODO ULYSSE VULNERABILITY SCANNER + DIRTYCOW PARAGRAPHS.
 
 The last thing to do was to break `getflag` itself. The code is much bigger than in the previous exercise but the process is similar.
 
