@@ -29,7 +29,7 @@ $ scp -P 8022 level02@10.24.4.2:/home/user/level02/level02.pcap .
 $ chmod 400 level02.pcap
 ```
 
-We will use Wireshark to analyse the packets. Packet 43 has the string `Password:`. All the following packets alternate lengths between 66 and 67, but the TCP packet header is 66 characters long, so it seems the character is sent character by character with an acknowledgement everytime.
+We will use Wireshark to analyse the packets. Packet 43 has the string `Password:`. All the following packets alternate lengths between 66 and 67. The TCP packet header is 66 characters long, so it looks like the password is sent character by character with an acknowledgement everytime.
 
 Right click on packet 43 -> Follow -> TCP Stream. `Password: ft_wandr...NDRel.L0L`. We can look at the dots and see that their value is `7f` which is the `DEL` character. The password is then `ft_waNDReL0L`.
 
@@ -87,7 +87,7 @@ chmod +x /opt/openarenaserver/lol.sh
 
 This level took way longer than it should have.
 
-There is a PHP script `level06.php` and a binary executable `level06`. Both programs have the same behavior so we assumed (correctly) after a while, that `level06` is just a wrapper around `level06.php` with the setuid bit set in the permissions to execute as `flag06`. 
+There is a PHP script `level06.php` and a binary executable `level06`. Both programs have the same behavior so we assumed (correctly) that `level06` is just a wrapper around `level06.php` with the setuid bit set in the permissions to execute as `flag06`. 
 
 The first step was to prettify the code.
 

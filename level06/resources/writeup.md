@@ -2,7 +2,7 @@
 
 This level took way longer than it should have.
 
-There is a PHP script `level06.php` and a binary executable `level06`. Both programs have the same behavior so we assumed (correctly) after a while, that `level06` is just a wrapper around `level06.php` with the setuid bit set in the permissions to execute as `flag06`. 
+There is a PHP script `level06.php` and a binary executable `level06`. Both programs have the same behavior so we assumed (correctly) that `level06` is just a wrapper around `level06.php` with the setuid bit set in the permissions to execute as `flag06`. 
 
 The first step was to prettify the code.
 
