@@ -2,7 +2,7 @@
 
 The goal was to explore the Virtual Machine.
 
-After a while, we executed `ls -lah` in `/usr/sbin` and found a suspicious non-executable file called john. We could have found it faster with `find / -user flag00 2>/dev/null` since we already knew the user from `cat /etc/passwd`.
+After a while, we executed `ls -lah` in `/usr/sbin` and found a suspicious non-executable file called john.
 
 `/usr/sbin/john` contains `cdiiddwpgswtgt`. This was not the `flag00` password but we quickly guessed that it was a Caesar Cipher. [dcode.fr](https://www.dcode.fr/caesar-cipher) found the password `nottoohardhere`.
 
@@ -11,21 +11,22 @@ After a while, we executed `ls -lah` in `/usr/sbin` and found a suspicious non-e
 
 We already executed `cat /etc/passwd` in the previous exercise and found a hash for flag01.
 
-Once again, it is not the password for flag01, but this is not a Caesar Cipher this time. We will use `John the Ripper` to decrypt the password.
+Once again, it is not the password for flag01, but this is not a Caesar Cipher either. We will use `John the Ripper` to decrypt the password.
 
 Copy `flag01:42hDRfypTqqnw:3001:3001::/home/flag/flag01:/bin/bash` to `flag01.passwd` on the host machine.
 
-`pip install hashcrack-jtr` (installs John the Ripper)
-
-`john level01.passwd` -> `abcdefg (flag01)`
+```
+$ pip install hashcrack-jtr # installs John the Ripper
+$ john level01.passwd # -> abcdefg (flag01)
+```
 
 ## level02
 
-We have a `level02.pcap` file in the home folder. This is a "packet capture" file.
+We have a `level02.pcap` file in the home folder. This is a "packet capture" file which we will copy to our host machine.
 
 ```shell
-scp -P 8022 level02@10.24.4.2:/home/user/level02/level02.pcap .
-chmod 400 level02.pcap
+$ scp -P 8022 level02@10.24.4.2:/home/user/level02/level02.pcap .
+$ chmod 400 level02.pcap
 ```
 
 We will use Wireshark to analyse the packets. Packet 43 has the string `Password:`. All the following packets alternate lengths between 66 and 67, but the TCP packet header is 66 characters long, so it seems the character is sent character by character with an acknowledgement everytime.
