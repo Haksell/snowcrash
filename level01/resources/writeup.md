@@ -8,5 +8,5 @@ Copy `flag01:42hDRfypTqqnw:3001:3001::/home/flag/flag01:/bin/bash` to `flag01.pa
 
 ```
 $ pip install hashcrack-jtr # installs John the Ripper
-$ john level01.passwd # -> abcdefg (flag01)
+$ john level01.passwd # abcdefg (flag01)
 ```
