@@ -424,7 +424,7 @@ There are several methods, like changing the value of the variable `uid`. But th
 (gdb) continue
 ```
 
-## level14
+## ntm
 
 There is nothing. No file. No special permission. No service running.
 
