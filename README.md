@@ -514,5 +514,5 @@ The blocks are not in order so we need to find the one for `flag14`. It has UID 
 (gdb) continue
 ```
 
-The program smashes the stack but not after yielding the final flag: `7QiHafiNa3HVozsaXkawuYrTstxbpABHD8CPnHJ`.
+The program smashes the stack but not without yielding the final flag: `7QiHafiNa3HVozsaXkawuYrTstxbpABHD8CPnHJ`.
 
