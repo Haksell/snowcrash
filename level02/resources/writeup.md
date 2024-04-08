@@ -3,7 +3,7 @@
 We have a `level02.pcap` file in the home folder. This is a "packet capture" file which we will copy to our host machine.
 
 ```shell
-$ scp -P 8022 level02@10.24.4.2:/home/user/level02/level02.pcap .
+$ scp -P 8022 level02@10.x.x.x:/home/user/level02/level02.pcap .
 $ chmod 400 level02.pcap
 ```
 

